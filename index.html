@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recipe Search</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream: #f0f7f3;
+    --warm-white: #f7fbf8;
+    --bark: #0d2b1a;
+    --bark-light: #3d7a58;
+    --sage: #5a8a6e;
+    --terracotta: #178040;
+    --gold: #209D50;
+    --border: #c6e0d0;
+    --shadow: 0 4px 24px rgba(13,43,26,0.10);
+    --shadow-hover: 0 12px 40px rgba(13,43,26,0.18);
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--bark);
+    min-height: 100vh;
+  }
+
+  /* ── Hero ── */
+  .hero {
+    background: var(--bark);
+    padding: 56px 24px 48px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 30% 60%, rgba(32,157,80,0.22) 0%, transparent 60%),
+                radial-gradient(ellipse at 75% 20%, rgba(41,184,94,0.12) 0%, transparent 55%);
+    pointer-events: none;
+  }
+  .hero-eyebrow {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 14px;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.2rem, 5vw, 3.6rem);
+    font-weight: 400;
+    color: var(--warm-white);
+    line-height: 1.15;
+    margin-bottom: 10px;
+  }
+  .hero h1 em { font-style: italic; color: #29b85e; }
+  .hero p {
+    color: rgba(247,251,248,0.6);
+    font-size: 15px;
+    font-weight: 300;
+    margin-bottom: 12px;
+    max-width: 30ch;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* ── Search bar ── */
+  .search-wrap {
+    max-width: 660px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+  .search-box {
+    display: flex;
+    align-items: center;
+    background: var(--warm-white);
+    border: 1.5px solid rgba(247,251,248,0.2);
+    border-radius: 60px;
+    padding: 6px 6px 6px 22px;
+    gap: 10px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    transition: box-shadow 0.2s;
+  }
+  .search-box:focus-within {
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3), 0 0 0 3px rgba(23,128,64,0.35);
+  }
+  .search-icon { color: var(--bark-light); flex-shrink: 0; }
+  .search-box input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    color: var(--bark);
+    padding: 8px 0;
+  }
+  .search-box input::placeholder { color: rgba(13,43,26,0.4); }
+  .search-btn {
+    background: var(--terracotta);
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    padding: 12px 22px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .search-btn:hover { background: #0f5c2e; transform: scale(1.02); }
+
+  /* ── Filter rows ── */
+  .filters-section {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 24px 24px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .filter-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+  }
+  .filter-row::after {
+    content: '';
+    position: absolute;
+    right: 0; top: 0; bottom: 0;
+    width: 48px;
+    background: linear-gradient(to right, transparent, var(--cream));
+    pointer-events: none;
+  }
+  .filter-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--bark-light);
+    white-space: nowrap;
+    width: 68px;
+    flex-shrink: 0;
+  }
+  .filter-scroll {
+    display: flex;
+    gap: 7px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-bottom: 2px;
+  }
+  .filter-scroll::-webkit-scrollbar { display: none; }
+  .chip {
+    padding: 6px 14px;
+    border-radius: 50px;
+    border: 1.5px solid var(--border);
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    color: var(--bark-light);
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: all 0.18s;
+  }
+  .chip:hover { border-color: var(--terracotta); color: var(--terracotta); }
+  .chip.active { background: var(--terracotta); border-color: var(--terracotta); color: #fff; }
+
+  /* ── Results bar ── */
+  .results-bar {
+    max-width: 900px;
+    margin: 20px auto 0;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .results-count { font-size: 13px; color: var(--bark-light); }
+  .results-count span { font-weight: 600; color: var(--bark); }
+  .sort-select {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--bark);
+    background: transparent;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 12px;
+    cursor: pointer;
+    outline: none;
+  }
+
+  /* ── Recipe grid ── */
+  .grid {
+    max-width: 900px;
+    margin: 24px auto 60px;
+    padding: 0 24px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 22px;
+  }
+  .card {
+    background: var(--warm-white);
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1.5px solid var(--border);
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: box-shadow 0.22s, transform 0.22s;
+    display: flex;
+    flex-direction: column;
+    animation: fadeUp 0.35s ease both;
+  }
+  .card:hover { box-shadow: var(--shadow-hover); transform: translateY(-4px); }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .card-img-wrap { position: relative; }
+  .emoji-img {
+    width: 100%;
+    aspect-ratio: 4/3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 64px;
+  }
+  .card-badge {
+    position: absolute;
+    top: 12px; left: 12px;
+    background: var(--bark);
+    color: var(--gold);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 50px;
+  }
+  .card-fav {
+    position: absolute;
+    top: 10px; right: 12px;
+    background: rgba(247,251,248,0.9);
+    border: none;
+    border-radius: 50%;
+    width: 34px; height: 34px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    transition: transform 0.15s;
+  }
+  .card-fav:hover { transform: scale(1.15); }
+  .card-body { padding: 16px 18px 18px; flex: 1; display: flex; flex-direction: column; }
+  .card-category {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--sage);
+    margin-bottom: 6px;
+  }
+  .card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--bark);
+    margin-bottom: 8px;
+  }
+  .card-desc {
+    font-size: 13px;
+    color: var(--bark-light);
+    line-height: 1.55;
+    flex: 1;
+    margin-bottom: 14px;
+  }
+  .card-meta {
+    display: flex;
+    gap: 14px;
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
+  }
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    color: var(--bark-light);
+  }
+  .meta-item svg { color: var(--sage); flex-shrink: 0; }
+  .difficulty-dot {
+    display: inline-block;
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    margin-right: 2px;
+  }
+
+  /* ── Empty state ── */
+  .empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 20px;
+  }
+  .empty-icon { font-size: 52px; margin-bottom: 16px; }
+  .empty h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    margin-bottom: 8px;
+    color: var(--bark);
+  }
+  .empty p { color: var(--bark-light); font-size: 14px; }
+
+  /* ── Modal ── */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(13,43,26,0.6);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--warm-white);
+    border-radius: 24px;
+    max-width: 520px;
+    width: 100%;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.35);
+    animation: modalIn 0.28s ease;
+    overflow: hidden;
+  }
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(0.94) translateY(20px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .modal-header {
+    position: relative;
+    background: var(--bark);
+    padding: 36px 28px 28px;
+  }
+  .modal-close {
+    position: absolute; top: 14px; right: 14px;
+    background: rgba(247,251,248,0.15);
+    border: none; border-radius: 50%;
+    width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: var(--warm-white); font-size: 18px;
+    transition: background 0.15s;
+  }
+  .modal-close:hover { background: rgba(247,251,248,0.25); }
+  .modal-category {
+    font-size: 10px; font-weight: 500; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--gold); margin-bottom: 8px;
+  }
+  .modal-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px; color: var(--warm-white); margin-bottom: 10px;
+  }
+  .modal-meta { display: flex; gap: 18px; flex-wrap: wrap; }
+  .modal-meta .meta-item { color: rgba(247,251,248,0.75); }
+  .modal-meta .meta-item svg { color: var(--gold); }
+  .modal-body { padding: 20px 28px 24px; }
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+  .tag {
+    background: rgba(198,224,208,0.4);
+    border: 1px solid var(--border);
+    color: var(--bark-light);
+    font-size: 12px;
+    padding: 5px 14px;
+    border-radius: 100px;
+    letter-spacing: 0.04em;
+  }
+  .go-to-recipe {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--terracotta);
+    color: #fff;
+    text-decoration: none;
+    border-radius: 50px;
+    padding: 13px 26px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    margin-top: 20px;
+    width: 100%;
+    justify-content: center;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .go-to-recipe:hover { background: #0f5c2e; transform: scale(1.02); }
+  .go-to-recipe svg { flex-shrink: 0; }
+
+  @media (max-width: 480px) {
+    /* Filters: keep side-by-side with horizontal scroll */
+    .filter-row { flex-direction: row; align-items: center; }
+    .filter-label { width: 52px; font-size: 9px; }
+
+    /* Single column cards on mobile */
+    .grid { grid-template-columns: 1fr; gap: 14px; }
+    .card-body { padding: 12px 14px 14px; }
+    .card-title { font-size: 15px; }
+
+    /* Keep meta items in a row, tighten spacing */
+    .card-meta { gap: 10px; }
+    .meta-item { font-size: 11px; }
+
+    /* Hero text sizing */
+    .hero h1 { font-size: 1.8rem; }
+    .hero p { max-width: 100%; font-size: 13px; }
+  }
+  @media (max-width: 360px) {
+    .grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO / SEARCH -->
+<div class="hero">
+  <p>Trimmed collects data from dozens of real recipes by professionals to find the best ingredients and cooking methods.</p>
+  <h1>Real Recipes<br><em>Without The Noise</em></h1>
+  <p>Search by ingredient, dish, diet, or occasion</p>
+  <div class="search-wrap">
+    <div class="search-box">
+      <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" id="searchInput" placeholder="Try 'beef', 'creamy', 'Russian'…" autocomplete="off">
+      <button class="search-btn" onclick="doSearch()">Search</button>
+    </div>
+  </div>
+</div>
+
+<!-- FILTERS -->
+<div class="filters-section">
+  <div class="filter-row">
+    <span class="filter-label">Category</span>
+    <div class="filter-scroll">
+      <button class="chip active" onclick="setFilter('category','All',this)">All</button>
+      <button class="chip" onclick="setFilter('category','Breakfast',this)">🍳 Breakfast</button>
+      <button class="chip" onclick="setFilter('category','Lunch',this)">🥗 Lunch</button>
+      <button class="chip" onclick="setFilter('category','Dinner',this)">🍝 Dinner</button>
+      <button class="chip" onclick="setFilter('category','Dessert',this)">🍰 Dessert</button>
+    </div>
+  </div>
+  <div class="filter-row">
+    <span class="filter-label">Origin</span>
+    <div class="filter-scroll" id="originScroll"></div>
+  </div>
+  <div class="filter-row">
+    <span class="filter-label">Taste</span>
+    <div class="filter-scroll" id="tasteScroll"></div>
+  </div>
+  <div class="filter-row">
+    <span class="filter-label">Ingredient</span>
+    <div class="filter-scroll" id="ingredientScroll"></div>
+  </div>
+</div>
+
+<!-- RESULTS BAR -->
+<div class="results-bar">
+  <div class="results-count" id="resultsCount"></div>
+  <select class="sort-select" id="sortSelect" onchange="renderCards()">
+    <option value="default">Sort: Featured</option>
+    <option value="time">Sort: Quickest first</option>
+    <option value="az">Sort: A → Z</option>
+    <option value="difficulty">Sort: Easiest first</option>
+  </select>
+</div>
+
+<!-- GRID -->
+<div class="grid" id="recipeGrid"></div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <button class="modal-close" onclick="closeModalBtn()">✕</button>
+      <div class="modal-category" id="mCat"></div>
+      <div class="modal-title" id="mTitle"></div>
+      <div class="modal-meta" id="mMeta"></div>
+    </div>
+    <div class="modal-body">
+      <div class="tags" id="mTags"></div>
+      <a class="go-to-recipe" id="mGoToRecipe" href="#" target="_blank">
+        Go To Full Recipe
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Recipe Data ─────────────────────────────────────
+// To add a recipe, copy this object and fill it in:
+// { id, emoji, title, category, tags, origin, taste, desc, time, difficulty, servings, url }
+const recipes = [
+  {
+    id: 1,
+    emoji: "🥩",
+    title: "Beef Stroganoff",
+    category: "Dinner",
+    tags: ["Creamy", "Tangy", "Mushroom", "Savory", "Sour Cream", "Beef", "Noodles", "Russian", "Eastern European", "One-Skillet", "Comfort Food", "Pasta"],
+    origin: ["Russian", "Eastern European"],
+    taste: ["Creamy", "Tangy", "Savory", "Rich", "Umami"],
+    desc: "Beef Stroganoff is a classic Russian dish with tender beef and mushroom in a creamy, savory sauce.",
+    time: 50,
+    difficulty: "Easy",
+    servings: 4,
+    url: "https://trimmedrecipes.com/beef-stroganoff",
+    keyIngredients: ["Beef", "Mushroom", "Sour Cream", "Egg Noodles", "Butter", "Onion", "Garlic"],
+  },
+  {
+    id: 2,
+    emoji: "🍗",
+    title: "Chicken Parmesan",
+    category: "Dinner",
+    tags: ["Crispy", "Cheesy", "Tomato", "Italian-American", "Comfort Food", "Baked", "Breaded"],
+    origin: ["Italian", "American"],
+    taste: ["Savory", "Rich", "Tangy", "Umami", "Crispy"],
+    desc: "Crispy breaded chicken topped with tangy tomato sauce and melty mozzarella and parmesan — a comfort food classic.",
+    time: 45,
+    difficulty: "Easy",
+    servings: 4,
+    url: "https://trimmedrecipes.com/chicken-parmesan",
+    keyIngredients: ["Chicken", "Mozzarella", "Parmesan", "Tomato Sauce", "Breadcrumbs", "Egg", "Garlic"],
+  }
+];
+
+// ── State ────────────────────────────────────────────
+let currentFilter = { category: 'All', origin: new Set(), taste: new Set(), ingredient: new Set() };
+let currentSearch = '';
+
+// ── Helpers ──────────────────────────────────────────
+function difficultyColor(d) {
+  return d === 'Easy' ? '#3d7a58' : d === 'Medium' ? '#d4a843' : '#c4623a';
+}
+
+function matchesFilter(r) {
+  const { category, origin, taste, ingredient } = currentFilter;
+  if (category !== 'All' && r.category !== category) return false;
+  if (origin.size > 0 && !(r.origin || []).some(o => origin.has(o))) return false;
+  if (taste.size > 0 && !(r.taste || []).some(t => taste.has(t))) return false;
+  if (ingredient.size > 0 && !(r.keyIngredients || []).some(i => ingredient.has(i))) return false;
+  return true;
+}
+
+function matchesSearch(r) {
+  if (!currentSearch) return true;
+  const q = currentSearch.toLowerCase();
+  return (
+    r.title.toLowerCase().includes(q) ||
+    r.desc.toLowerCase().includes(q) ||
+    r.category.toLowerCase().includes(q) ||
+    r.tags.some(t => t.toLowerCase().includes(q)) ||
+    (r.origin || []).some(o => o.toLowerCase().includes(q)) ||
+    (r.taste || []).some(t => t.toLowerCase().includes(q)) ||
+    (r.keyIngredients || []).some(i => i.toLowerCase().includes(q))
+  );
+}
+
+function getSorted(arr) {
+  const s = document.getElementById('sortSelect').value;
+  const copy = [...arr];
+  if (s === 'time') copy.sort((a, b) => a.time - b.time);
+  else if (s === 'az') copy.sort((a, b) => a.title.localeCompare(b.title));
+  else if (s === 'difficulty') {
+    const rank = { Easy: 0, Medium: 1, Hard: 2 };
+    copy.sort((a, b) => rank[a.difficulty] - rank[b.difficulty]);
+  }
+  return copy;
+}
+
+// ── Render cards ─────────────────────────────────────
+function renderCards() {
+  const filtered = getSorted(recipes.filter(r => matchesFilter(r) && matchesSearch(r)));
+  const grid = document.getElementById('recipeGrid');
+  document.getElementById('resultsCount').innerHTML =
+    `<span>${filtered.length}</span> recipe${filtered.length !== 1 ? 's' : ''} found`;
+
+  if (!filtered.length) {
+    grid.innerHTML = `<div class="empty"><div class="empty-icon">🔍</div><h3>No recipes found</h3><p>Try a different search term or filter.</p></div>`;
+    return;
+  }
+
+  grid.innerHTML = filtered.map((r, i) => `
+    <div class="card" style="animation-delay:${i * 0.05}s" onclick="openModal(${r.id})">
+      <div class="card-img-wrap">
+        <div class="emoji-img" style="background:${
+          r.category === 'Dessert'   ? 'linear-gradient(135deg,#d4e8dc,#b8d4c0)' :
+          r.category === 'Breakfast' ? 'linear-gradient(135deg,#e8f3ec,#d0ebd8)' :
+          r.category === 'Dinner'    ? 'linear-gradient(135deg,#d4e8d0,#b8d4b0)' :
+                                       'linear-gradient(135deg,#d4e4f3,#b0cce4)'
+        }">${r.emoji}</div>
+        <span class="card-badge">${r.category}</span>
+        <button class="card-fav" onclick="event.stopPropagation()" title="Save">🤍</button>
+      </div>
+      <div class="card-body">
+        <div class="card-category">${r.tags.slice(0, 2).join(' · ')}</div>
+        <div class="card-title">${r.title}</div>
+        <div class="card-desc">${r.desc}</div>
+        <div class="card-meta">
+          <div class="meta-item">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            ${r.time} min
+          </div>
+          <div class="meta-item">
+            <span class="difficulty-dot" style="background:${difficultyColor(r.difficulty)}"></span>
+            ${r.difficulty}
+          </div>
+          <div class="meta-item">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            ${r.servings}
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── Filters ──────────────────────────────────────────
+function setFilter(dimension, val, btn) {
+  if (dimension === 'category') {
+    currentFilter.category = val;
+    btn.closest('.filter-scroll').querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+  } else {
+    const set = currentFilter[dimension];
+    if (set.has(val)) {
+      set.delete(val);
+      btn.classList.remove('active');
+    } else {
+      set.add(val);
+      btn.classList.add('active');
+    }
+  }
+  renderCards();
+}
+
+function buildFilters() {
+  const origins     = [...new Set(recipes.flatMap(r => r.origin         || []))].sort();
+  const tastes      = [...new Set(recipes.flatMap(r => r.taste          || []))].sort();
+  const ingredients = [...new Set(recipes.flatMap(r => r.keyIngredients || []))].sort();
+
+  function makeChips(containerId, dimension, values) {
+    const el = document.getElementById(containerId);
+    el.innerHTML = '';
+    values.forEach(val => {
+      const btn = document.createElement('button');
+      btn.className = 'chip';
+      btn.textContent = val;
+      btn.setAttribute('onclick', `setFilter('${dimension}','${val}',this)`);
+      el.appendChild(btn);
+    });
+  }
+
+  makeChips('originScroll',     'origin',     origins);
+  makeChips('tasteScroll',      'taste',      tastes);
+  makeChips('ingredientScroll', 'ingredient', ingredients);
+}
+
+// ── Search ───────────────────────────────────────────
+function doSearch() {
+  currentSearch = document.getElementById('searchInput').value.trim();
+  renderCards();
+}
+
+// ── Modal ────────────────────────────────────────────
+function openModal(id) {
+  const r = recipes.find(x => x.id === id);
+  if (!r) return;
+  document.getElementById('mCat').textContent =
+    r.category + ' · ' + r.tags.filter(t => !r.origin?.includes(t) && !r.taste?.includes(t)).slice(0, 3).join(', ');
+  document.getElementById('mTitle').textContent = r.title;
+  document.getElementById('mMeta').innerHTML = `
+    <div class="meta-item">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      ${r.time} min
+    </div>
+    <div class="meta-item">
+      <span class="difficulty-dot" style="background:${difficultyColor(r.difficulty)};margin-right:4px"></span>${r.difficulty}
+    </div>
+    <div class="meta-item">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+      Serves ${r.servings}
+    </div>
+  `;
+  document.getElementById('mTags').innerHTML = r.tags.slice(0, 3).map(t => `<span class="tag">${t}</span>`).join('');
+  const goBtn = document.getElementById('mGoToRecipe');
+  goBtn.href = r.url || '#';
+  goBtn.style.display = r.url ? 'inline-flex' : 'none';
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('modalOverlay')) closeModalBtn();
+}
+function closeModalBtn() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// ── Init ─────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  buildFilters();
+  renderCards();
+  document.getElementById('searchInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') doSearch();
+  });
+  document.getElementById('searchInput').addEventListener('input', e => {
+    if (!e.target.value) { currentSearch = ''; renderCards(); }
+  });
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModalBtn();
+});
+</script>
+</body>
+</html>
+
+
