@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Beef Stroganoff — Recipe</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream: #f0f7f3;
+      --warm-white: #f7fbf8;
+      --brown-dark: #0d2b1a;
+      --brown-mid: #209D50;
+      --brown-light: #29b85e;
+      --rust: #178040;
+      --gold: #209D50;
+      --mushroom: #5a8a6e;
+      --sage: #3d7a58;
+      --border: #c6e0d0;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--cream);
+      color: var(--brown-dark);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      background-color: var(--brown-dark);
+      overflow: hidden;
+      padding: 80px 40px 60px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: end;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 80% at 80% 60%, rgba(32,157,80,0.22) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 60% at 10% 30%, rgba(41,184,94,0.12) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .hero-eyebrow {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 20px;
+    }
+
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(42px, 6vw, 72px);
+      font-weight: 700;
+      color: var(--warm-white);
+      line-height: 1.05;
+      margin-bottom: 28px;
+    }
+
+    .hero h1 em {
+      font-style: italic;
+      color: var(--gold);
+    }
+
+    .hero-desc {
+      color: rgba(250,248,244,0.7);
+      font-size: 16px;
+      max-width: 440px;
+      margin-bottom: 40px;
+    }
+
+    .hero-meta {
+      display: flex;
+      gap: 32px;
+    }
+
+    .meta-item {
+      text-align: center;
+    }
+
+    .meta-label {
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(250,248,244,0.45);
+      margin-bottom: 4px;
+    }
+
+    .meta-value {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      color: var(--warm-white);
+    }
+
+    .meta-unit {
+      font-size: 12px;
+      color: var(--gold);
+      font-weight: 400;
+    }
+
+    .hero-visual {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 12px;
+    }
+
+    .tag-cloud {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .tag {
+      background: rgba(250,248,244,0.07);
+      border: 1px solid rgba(250,248,244,0.15);
+      color: rgba(250,248,244,0.7);
+      font-size: 12px;
+      padding: 5px 14px;
+      border-radius: 100px;
+      letter-spacing: 0.04em;
+    }
+
+    .hero-quote {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 18px;
+      color: rgba(250,248,244,0.45);
+      text-align: right;
+      max-width: 320px;
+      line-height: 1.5;
+    }
+
+    /* ── LAYOUT ── */
+    .page-body {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 60px 40px;
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 64px;
+      align-items: start;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      position: sticky;
+      top: 32px;
+    }
+
+    .card {
+      background: var(--warm-white);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 32px;
+      margin-bottom: 24px;
+    }
+
+    .card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--brown-mid);
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .ing-group {
+      margin-bottom: 20px;
+    }
+
+    .ing-group-label {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--mushroom);
+      margin-bottom: 10px;
+    }
+
+    .ing-list {
+      list-style: none;
+    }
+
+    .ing-list li {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 7px 0;
+      border-bottom: 1px dashed var(--border);
+      font-size: 14px;
+      gap: 12px;
+    }
+
+    .ing-list li:last-child { border-bottom: none; }
+
+    .ing-name { color: var(--brown-dark); }
+
+    .ing-amount {
+      font-family: 'Playfair Display', serif;
+      font-size: 13px;
+      color: var(--brown-light);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .ing-note {
+      font-size: 11px;
+      color: var(--mushroom);
+      font-style: italic;
+    }
+
+    .optional-badge {
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--mushroom);
+      background: rgba(140,123,107,0.1);
+      padding: 2px 8px;
+      border-radius: 100px;
+      flex-shrink: 0;
+    }
+
+    /* ── SERVINGS CONTROL ── */
+    .servings-control {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .servings-label { font-size: 13px; color: var(--mushroom); }
+
+    .stepper {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .stepper button {
+      width: 34px;
+      height: 34px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 18px;
+      color: var(--brown-mid);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s;
+    }
+
+    .stepper button:hover { background: var(--cream); }
+
+    .stepper .count {
+      width: 40px;
+      text-align: center;
+      font-family: 'Playfair Display', serif;
+      font-size: 18px;
+      color: var(--brown-dark);
+      border-left: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      line-height: 34px;
+    }
+
+    /* ── TIPS CARD ── */
+    .tip {
+      display: flex;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .tip:last-child { border-bottom: none; }
+
+    .tip-icon {
+      font-size: 16px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .tip-head {
+      font-weight: 500;
+      color: var(--rust);
+      margin-bottom: 2px;
+      font-size: 12px;
+      letter-spacing: 0.04em;
+    }
+
+    /* ── INSTRUCTIONS ── */
+    .instructions-header {
+      font-family: 'Playfair Display', serif;
+      font-size: 30px;
+      margin-bottom: 40px;
+      color: var(--brown-dark);
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 48px 1fr;
+      gap: 24px;
+      margin-bottom: 40px;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: stepIn 0.5s forwards;
+    }
+
+    @keyframes stepIn {
+      to { opacity: 1; transform: none; }
+    }
+
+    .step:nth-child(1) { animation-delay: 0.05s; }
+    .step:nth-child(2) { animation-delay: 0.10s; }
+    .step:nth-child(3) { animation-delay: 0.15s; }
+    .step:nth-child(4) { animation-delay: 0.20s; }
+    .step:nth-child(5) { animation-delay: 0.25s; }
+    .step:nth-child(6) { animation-delay: 0.30s; }
+    .step:nth-child(7) { animation-delay: 0.35s; }
+    .step:nth-child(8) { animation-delay: 0.40s; }
+    .step:nth-child(9) { animation-delay: 0.45s; }
+    .step:nth-child(10){ animation-delay: 0.50s; }
+
+    .step-num {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--brown-dark);
+      color: var(--cream);
+      font-family: 'Playfair Display', serif;
+      font-size: 17px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .step.optional .step-num {
+      background: transparent;
+      border: 2px dashed var(--border);
+      color: var(--mushroom);
+    }
+
+    .step-body {}
+
+    .step-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 18px;
+      margin-bottom: 8px;
+      color: var(--brown-dark);
+    }
+
+    .step-text {
+      font-size: 15px;
+      color: #1a3d28;
+      line-height: 1.75;
+    }
+
+    .step-badge {
+      display: inline-block;
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 100px;
+      margin-left: 10px;
+      vertical-align: middle;
+      background: rgba(140,123,107,0.12);
+      color: var(--mushroom);
+    }
+
+    .step-separator {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 0 0 40px 72px;
+    }
+
+    /* ── TROUBLESHOOTING ── */
+    .trouble-section {
+      max-width: 1100px;
+      margin: 0 auto 60px;
+      padding: 0 40px;
+    }
+
+    .trouble-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 24px;
+      margin-bottom: 24px;
+      color: var(--brown-dark);
+    }
+
+    .trouble-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .trouble-card {
+      background: var(--warm-white);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--rust);
+      border-radius: 0 4px 4px 0;
+      padding: 20px 20px 20px 20px;
+    }
+
+    .trouble-problem {
+      font-weight: 500;
+      font-size: 14px;
+      color: var(--rust);
+      margin-bottom: 6px;
+    }
+
+    .trouble-fix {
+      font-size: 13.5px;
+      color: #1a3d28;
+      line-height: 1.6;
+    }
+
+    /* ── FOOTER STRIPE ── */
+    .footer-stripe {
+      background: var(--brown-dark);
+      padding: 28px 40px;
+      text-align: center;
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      color: rgba(250,248,244,0.35);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 800px) {
+      .hero { grid-template-columns: 1fr; gap: 32px; padding: 48px 24px 40px; }
+      .hero-visual { align-items: flex-start; }
+      .hero-quote { text-align: left; }
+      .page-body { grid-template-columns: 1fr; padding: 40px 24px; }
+      .sidebar { position: static; }
+      .trouble-section { padding: 0 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<header class="hero">
+  <div>
+    <p class="hero-eyebrow">Beginner Friendly</p>
+    <h1>Beef<br><em>Stroganoff</em></h1>
+    <p class="hero-desc">Beef Stroganoff is a classic Russian dish with tender beef and mushroom in a creamy, savory sauce.</p>
+    <div class="hero-meta">
+      <div class="meta-item">
+        <div class="meta-label">Time</div>
+        <div class="meta-value">45 <span class="meta-unit">min</span></div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Serves</div>
+        <div class="meta-value">4</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Difficulty</div>
+        <div class="meta-value" style="font-size:16px; padding-top:4px;">Beginner</div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <img src="YOUR-IMAGE.png" alt="Beef Stroganoff" style="width:180px; height:180px; object-fit:cover; border-radius:6px; opacity:0.9;" />
+    <div class="tag-cloud">
+      <span class="tag">Creamy</span>
+      <span class="tag">Mushroom</span>
+      <span class="tag">Sour Cream</span>
+      <span class="tag">Beef</span>
+      <span class="tag">Noodles</span>
+      <span class="tag">Russian</span>
+      <span class="tag">Eastern European</span>
+      <span class="tag">Savory</span>
+      <span class="tag">Tangy</span>
+      <span class="tag">One-Skillet</span>
+      <span class="tag">Pasta</span>
+    </div>
+  </div>
+</header>
+
+<!-- MAIN CONTENT -->
+<main class="page-body">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="card">
+      <div class="servings-control">
+        <span class="servings-label">Servings</span>
+        <div class="stepper">
+          <button onclick="changeServings(-1)" aria-label="Decrease">−</button>
+          <div class="count" id="servCount">4</div>
+          <button onclick="changeServings(1)" aria-label="Increase">+</button>
+        </div>
+      </div>
+
+      <p class="card-title">Ingredients</p>
+
+      <div class="ing-group">
+        <div class="ing-group-label">Required</div>
+        <ul class="ing-list">
+          <li><span class="ing-name">beef</span><span class="ing-amount" data-base="1" data-unit="lb" data-suffix="">1 lb</span></li>
+          <li><span class="ing-name">mushroom</span><span class="ing-amount" data-base="8" data-unit="oz" data-suffix="">8 oz</span></li>
+          <li><span class="ing-name">onion</span><span class="ing-amount" data-base="0.5" data-unit="" data-suffix="(diced, chopped)">1/2 (diced, chopped)</span></li>
+          <li><span class="ing-name">sour cream</span><span class="ing-amount" data-base="0.5" data-unit="cup" data-suffix="">1/2 cup</span></li>
+        </ul>
+      </div>
+
+      <div class="ing-group">
+        <div class="ing-group-label">Often Used</div>
+        <ul class="ing-list">
+          <li><span class="ing-name">beef broth</span><span class="ing-amount" data-base="1" data-unit="cup" data-suffix="">1 cup</span></li>
+          <li><span class="ing-name">butter</span><span class="ing-amount" data-base="0.25" data-unit="cup" data-suffix="">1/4 cup</span></li>
+          <li><span class="ing-name">flour</span><span class="ing-amount" data-base="3" data-unit="tbsp" data-suffix="">3 tbsp</span></li>
+          <li><span class="ing-name">garlic</span><span class="ing-amount">chopped</span></li>
+          <li><span class="ing-name">mustard</span><span class="ing-amount" data-base="2" data-unit="tsp" data-suffix="">2 tsp</span></li>
+          <li><span class="ing-name">noodles</span><span class="ing-amount" data-base="10" data-unit="oz" data-suffix="(drained)">10 oz (drained)</span></li>
+          <li><span class="ing-name">parsley</span><span class="ing-amount" data-base="2" data-unit="tbsp" data-suffix="(chopped)">2 tbsp (chopped)</span></li>
+          <li><span class="ing-name">salt</span><span class="ing-amount" data-base="1" data-unit="tsp" data-suffix="">1 tsp</span></li>
+          <li><span class="ing-name">worcestershire sauce</span><span class="ing-amount" data-base="1" data-unit="tbsp" data-suffix="">1 tbsp</span></li>
+        </ul>
+      </div>
+
+      <div class="ing-group">
+        <div class="ing-group-label">Optional</div>
+        <ul class="ing-list">
+          <li><span class="ing-name">allspice</span><span class="ing-amount" data-base="2" data-unit="tsp" data-suffix="">2 tsp</span></li>
+          <li><span class="ing-name">bay leaf</span><span class="ing-amount" data-base="2" data-unit="" data-suffix="">2</span></li>
+          <li><span class="ing-name">black pepper</span><span class="ing-amount" data-base="0.25" data-unit="tsp" data-suffix="">1/4 tsp</span></li>
+          <li><span class="ing-name">brandy</span><span class="ing-amount" data-base="0.5" data-unit="" data-suffix="">1/2</span></li>
+          <li><span class="ing-name">carrot</span><span class="ing-amount" data-base="2" data-unit="" data-suffix="(diced)">2 (diced)</span></li>
+          <li><span class="ing-name">chive</span><span class="ing-amount">(diced, chopped)</span></li>
+          <li><span class="ing-name">cornstarch</span><span class="ing-amount" data-base="2" data-unit="tbsp" data-suffix="">2 tbsp</span></li>
+          <li><span class="ing-name">cracked black pepper</span><span class="ing-amount" data-base="0.25" data-unit="tsp" data-suffix="">1/4 tsp</span></li>
+          <li><span class="ing-name">cream cheese</span><span class="ing-amount" data-base="4" data-unit="oz" data-suffix="">4 oz</span></li>
+          <li><span class="ing-name">cream of mushroom soup</span><span class="ing-amount" data-base="10.5" data-unit="oz" data-suffix="">10.5 oz</span></li>
+          <li><span class="ing-name">heavy cream</span><span class="ing-amount" data-base="0.5" data-unit="cup" data-suffix="">1/2 cup</span></li>
+          <li><span class="ing-name">nutmeg</span><span class="ing-amount" data-base="0.5" data-unit="tsp" data-suffix="">1/2 tsp</span></li>
+          <li><span class="ing-name">paprika</span><span class="ing-amount" data-base="2" data-unit="tbsp" data-suffix="">2 tbsp</span></li>
+          <li><span class="ing-name">sweet paprika</span><span class="ing-amount" data-base="1" data-unit="tsp" data-suffix="">1 tsp</span></li>
+          <li><span class="ing-name">thyme</span><span class="ing-amount" data-base="1" data-unit="tbsp" data-suffix="">1 tbsp</span></li>
+          <li><span class="ing-name">tomato paste</span><span class="ing-amount" data-base="1" data-unit="tbsp" data-suffix="">1 tbsp</span></li>
+          <li><span class="ing-name">water</span><span class="ing-amount" data-base="0.5" data-unit="cup" data-suffix="">1/2 cup</span></li>
+          <li><span class="ing-name">white wine</span><span class="ing-amount" data-base="0.5" data-unit="cup" data-suffix="">1/2 cup</span></li>
+          <li><span class="ing-name">sherry</span><span class="ing-amount" data-base="0.25" data-unit="cup" data-suffix="">1/4 cup</span></li>
+          <li><span class="ing-name">sherry red wine vinegar</span><span class="ing-amount" data-base="1" data-unit="tsp" data-suffix="">1 tsp</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="card-title">Troubleshooting</p>
+      <div class="tip">
+        <div class="tip-icon">💧</div>
+        <div>
+          <div class="tip-head">Sauce too thin</div>
+          Simmer longer or whisk in a cornstarch slurry (2 tbsp cornstarch + equal cold water).
+        </div>
+      </div>
+      <div class="tip">
+        <div class="tip-icon">🥣</div>
+        <div>
+          <div class="tip-head">Sauce too thick</div>
+          Add a splash of beef broth or water and recheck seasoning.
+        </div>
+      </div>
+      <div class="tip">
+        <div class="tip-icon">🌡️</div>
+        <div>
+          <div class="tip-head">Dairy curdling</div>
+          Keep heat low. Temper sour cream by whisking in a spoonful of hot sauce first.
+        </div>
+      </div>
+      <div class="tip">
+        <div class="tip-icon">🥩</div>
+        <div>
+          <div class="tip-head">Tough meat</div>
+          Brown in a single layer without crowding; don't flip too soon.
+        </div>
+      </div>
+      <div class="tip">
+        <div class="tip-icon">🍄</div>
+        <div>
+          <div class="tip-head">Watery mushrooms</div>
+          Brown mushrooms separately first, then fold back in.
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- INSTRUCTIONS -->
+  <section>
+    <h2 class="instructions-header">How to Make It</h2>
+
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <div class="step-title">Prep your mise en place</div>
+        <p class="step-text">Set out a large skillet or shallow Dutch oven, cutting board, knife, and measuring cups. Pat beef dry, trim if needed, and slice mushrooms. Dice onion for quick browning. Have sour cream at room temperature so it's ready to add without curdling.</p>
+      </div>
+    </div>
+    <hr class="step-separator">
+
+    <div class="step optional">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <div class="step-title">Season and rest the beef <span class="step-badge">Optional</span></div>
+        <p class="step-text">Lightly season the beef with salt and pepper and let it rest a few minutes while you heat the pan. This encourages a better crust when you sear.</p>
+      </div>
+    </div>
+    <hr class="step-separator">
+
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <div class="step-title">Brown the beef in batches</div>
+        <p class="step-text">Heat a wide skillet over medium-high heat and add a little butter or oil. Sear beef in batches until deeply browned on all sides, about 2–3 minutes per side. Transfer to a plate — keep any browned fond in the pan, that's pure flavor.</p>
+      </div>
+    </div>
+    <hr class="step-separator">
+
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <div class="step-title">Sauté aromatics and mushrooms</div>
+        <p class="step-text">In the same pan, add remaining butter. Cook onion until translucent and lightly golden, about 4–5 minutes. Add mushrooms and garlic; cook until mushrooms soften and brown in spots, about 6–8 minutes. The kitchen should smell savory and meaty with a hint of sweetness.</p>
+      </div>
+    </div>
+    <hr class="step-separator">
+
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-body">
+        <div class="step-title">Build the thickening base</div>
+        <p class="step-text">Sprinkle flour over the vegetables; stir to coat and cook 1–2 minutes to remove the raw flour taste. You want a cloudy glaze that will thicken the sauce as it simmers.</p>
+      </div>
+    </div>
+    <hr class="step-separator">
+
+    <div class="step">
+      <div class="step-num">6</div>
+      <div class="step-body">
+        <div class="step-title">Deglaze and add flavor boosters</div>
+        <p class="step-text">Pour in white wine (optional) to deglaze, scraping up every bit of fond. Return beef to the pan, then add beef broth and Worcestershire sauce. If using brandy or sherry, add now and let the alcohol cook off for a minute. Brandy adds fruity depth; sherry adds a nutty sweetness.</p>
+      </div>
+    </div>
+    <hr class="step-separator">
+
+    <div class="step">
+      <div class="step-num">7</div>
+      <div class="step-body">
+        <div class="step-title">Season and simmer</div>
+        <p class="step-text">Stir in mustard, paprika, thyme, and tomato paste. Drop in bay leaf and carrot if using. Simmer gently for 6–8 minutes until flavors meld and the sauce thickens slightly. Taste and adjust salt.</p>
+      </div>
+    </div>
+    <hr class="step-separator">
+
+    <div class="step">
+      <div class="step-num">8</div>
+      <div class="step-body">
+        <div class="step-title">Create the creamy finish</div>
+        <p class="step-text">Reduce heat to low and stir in sour cream. If using cream cheese or heavy cream, add a little at a time. Do not boil after adding dairy. The sauce should be glossy, smooth, and coat the back of a spoon beautifully.</p>
+      </div>
+    </div>
+    <hr class="step-separator">
+
+    <div class="step">
+      <div class="step-num">9</div>
+      <div class="step-body">
+        <div class="step-title">Cook noodles and combine</div>
+        <p class="step-text">While the sauce simmers, cook egg noodles in salted water until al dente; drain well. Toss with a touch of butter, or plate and spoon the stroganoff sauce over the top. Finish with freshly chopped parsley for color and brightness.</p>
+      </div>
+    </div>
+    <hr class="step-separator">
+
+    <div class="step">
+      <div class="step-num">10</div>
+      <div class="step-body">
+        <div class="step-title">Rest and serve</div>
+        <p class="step-text">Let the dish rest a minute — the sauce tightens up beautifully. Serve hot, with an extra dollop of sour cream if desired, and cracked black pepper on top.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer-stripe">
+  Recipe · Beef Stroganoff · Serves 4 · ~45 minutes
+</footer>
+
+<script>
+  let servings = 4;
+  const BASE = 4;
+
+  function changeServings(delta) {
+    servings = Math.max(1, Math.min(20, servings + delta));
+    document.getElementById('servCount').textContent = servings;
+    updateAmounts();
+  }
+
+  function toFraction(val) {
+    if (val === 0) return '0';
+    const whole = Math.floor(val);
+    const dec = val - whole;
+    let frac = '';
+    if (Math.abs(dec - 0.25) < 0.01) frac = '1/4';
+    else if (Math.abs(dec - 0.5)  < 0.01) frac = '1/2';
+    else if (Math.abs(dec - 0.75) < 0.01) frac = '3/4';
+    else if (Math.abs(dec - 0.33) < 0.02) frac = '1/3';
+    else if (Math.abs(dec - 0.67) < 0.02) frac = '2/3';
+
+    if (frac) return whole > 0 ? `${whole} ${frac}` : frac;
+    // fall back to 1 decimal
+    const rounded = Math.round(val * 10) / 10;
+    return rounded % 1 === 0 ? rounded.toString() : rounded.toFixed(1);
+  }
+
+  function updateAmounts() {
+    const ratio = servings / BASE;
+    document.querySelectorAll('[data-base]').forEach(el => {
+      const base   = parseFloat(el.dataset.base);
+      const unit   = el.dataset.unit   || '';
+      const suffix = el.dataset.suffix || '';
+      const val    = base * ratio;
+      const display = toFraction(val);
+      el.textContent = [display, unit, suffix].filter(Boolean).join(' ');
+    });
+  }
+</script>
+</body>
+</html>
+
+
